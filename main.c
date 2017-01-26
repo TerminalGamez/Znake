@@ -1,15 +1,19 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "apple.h"
 #include "canvas.h"
+#include "input.h"
 #include "znake.h"
 
 
 #define WIDTH 20
 #define HIGHT 20
+#define SPEED 250000
 
 static struct termios old, new;
 
@@ -29,17 +33,20 @@ void resetTermios(void)
   tcsetattr(0, TCSANOW, &old);
 }
 
-Canvas canvas;
 
-Znake znake;
 
-Apple apple;
-
-int loop = 1;
 
 int main(){
+  Canvas canvas;
+  Znake znake;
+  Apple apple;
+
+  pthread_t thread;
+  void* p;
+
   initTermios(0);
   srand(time(NULL));
+  
   initZnake(&znake, WIDTH, HIGHT);
   initCanvas(&canvas, WIDTH, HIGHT);
   initApple(&apple);
@@ -47,57 +54,21 @@ int main(){
   clearCanvas(&canvas);
   addZnakeToCanvas(&canvas, &znake);
   spawnApple(&apple, &canvas, znake.length);
+  addAppleToCanvas(&canvas, &apple);
+  printCanvas(&canvas);
   
-  while(loop){
-    switch(getchar()){
-      case 'q' :
-        loop = 0;
-        continue;
-      case 'a' :
-        if(znake.dirX == 1){
-          continue;
-        }else{
-          znake.dirX = -1;
-          znake.dirY = 0;
-          break;
-        }
-      case 'w' :
-        if(znake.dirY == 1){
-          continue;
-        }else{
-          znake.dirX = 0;
-          znake.dirY = -1;
-          break;
-        }
-      case 'd' :
-        if(znake.dirX == -1){
-          continue;
-        }else{
-          znake.dirX = 1;
-          znake.dirY = 0;
-          break;
-        }
-      case 's' :
-        if(znake.dirY == -1){
-          continue;
-        }else{
-          znake.dirX = 0;
-          znake.dirY = 1;
-          break;
-        }
-      case 'p' :
-        apple.eaten = 1;
-        continue;
-      default:
-        continue;
-    }
+  p = &znake;
+  pthread_create(&thread, NULL, input, p);
+  
+  while(znake.alive){
+    usleep(SPEED);
+    clearCanvas(&canvas);
     if(apple.eaten){
       growZnake(&znake);
       apple.eaten = 0;
     }else{
       moveZnake(&znake);
     }
-    clearCanvas(&canvas);
     addZnakeToCanvas(&canvas, &znake);
     eat(&znake, &apple);
     if(apple.eaten){
@@ -105,7 +76,10 @@ int main(){
     }
     addAppleToCanvas(&canvas, &apple);
     printCanvas(&canvas);
+    collide(&znake, &canvas);
   }
+  
+  pthread_join(thread, NULL);
   resetTermios();
   return 0;
 }

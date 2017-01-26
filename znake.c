@@ -8,27 +8,22 @@ void initZnake(Znake* znake, int width, int hight){
   znake->y = (int*) malloc(width*hight*(sizeof(int)));
   *(znake->x) = width/2;
   *(znake->y) = hight/2;
+  znake->headX = znake->x;
+  znake->headY = znake->y;
   znake->dirX = 1;
   znake->dirY = 0;
   znake->length = 1;
+  znake->alive = 1;
 }
 
-int  tempX;
-int  tempY;
-int  prevX;
-int  prevY;
-int* headX;
-int* headY; 
 void moveZnake(Znake* znake){
-  headX = znake->x+znake->length-1;
-  headY = znake->y+znake->length-1;
-  prevX = *headX;
-  prevY = *headY;
-  *headX = prevX + znake->dirX;
-  *headY = prevY + znake->dirY;
+  int prevX = *znake->headX;
+  int prevY = *znake->headY;
+  *znake->headX = prevX + znake->dirX;
+  *znake->headY = prevY + znake->dirY;
   for(int i=znake->length-2; i>=0; i--){
-      tempX  = *(znake->x+i);
-      tempY  = *(znake->y+i);
+      int tempX  = *(znake->x+i);
+      int tempY  = *(znake->y+i);
       *(znake->x+i) = prevX;
       *(znake->y+i) = prevY;
       prevX  = tempX;
@@ -36,17 +31,38 @@ void moveZnake(Znake* znake){
   }
 }
 void growZnake(Znake* znake){
-  headX = znake->x + znake->length - 1;
-  headY = znake->y + znake->length - 1;
-  *(headX+1) = *headX + znake->dirX;
-  *(headY+1) = *headY + znake->dirY;
+  *(znake->headX+1) = *znake->headX + znake->dirX;
+  *(znake->headY+1) = *znake->headY + znake->dirY;
+  znake->headX++;
+  znake->headY++;
   znake->length++;
 }
 
 void eat(Znake* znake, Apple* apple){
-  headX = znake->x + znake->length-1;
-  headY = znake->y + znake->length-1;
-  if(*headX == apple->x && *headY == apple->y){
+  if(*znake->headX == apple->x && *znake->headY == apple->y){
     apple->eaten = 1;
   }
 }
+
+int outOfBounds(Znake* znake, Canvas* canvas){
+  return (*znake->headX < 0 || *znake->headX >= canvas->width) ||
+         (*znake->headY < 0 || *znake->headY >= canvas->hight);
+}
+
+int selfCollision(Znake* znake){
+  for(int i=0; i<znake->length-1; i++){
+    if(*znake->headX == *(znake->x + i) && *znake->headY == *(znake->y + i)){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void collide(Znake* znake, Canvas* canvas){
+  if( outOfBounds(znake, canvas) || selfCollision(znake) ){
+    znake->alive = 0;
+  }
+}
+
+
+
