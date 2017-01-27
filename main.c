@@ -12,7 +12,7 @@
 
 
 #define WIDTH 20
-#define HIGHT 20
+#define HEIGHT 20
 #define SPEED 250000
 
 static struct termios old, new;
@@ -42,13 +42,14 @@ int main(){
   Apple apple;
 
   pthread_t thread;
-  void* p;
+  void* p[2];
+  pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
   initTermios(0);
   srand(time(NULL));
   
-  initZnake(&znake, WIDTH, HIGHT);
-  initCanvas(&canvas, WIDTH, HIGHT);
+  initZnake(&znake, WIDTH, HEIGHT);
+  initCanvas(&canvas, WIDTH, HEIGHT);
   initApple(&apple);
   
   clearCanvas(&canvas);
@@ -57,17 +58,18 @@ int main(){
   addAppleToCanvas(&canvas, &apple);
   printCanvas(&canvas);
   
-  p = &znake;
+  *p = &znake;
+  *(p+1) = &lock;
   pthread_create(&thread, NULL, input, p);
   
   while(znake.alive){
     usleep(SPEED);
     clearCanvas(&canvas);
     if(apple.eaten){
-      growZnake(&znake);
+      growZnake(&znake, &lock);
       apple.eaten = 0;
     }else{
-      moveZnake(&znake);
+      moveZnake(&znake, &lock);
     }
     addZnakeToCanvas(&canvas, &znake);
     eat(&znake, &apple);
@@ -81,5 +83,6 @@ int main(){
   
   pthread_join(thread, NULL);
   resetTermios();
+  pthread_exit(NULL);
   return 0;
 }

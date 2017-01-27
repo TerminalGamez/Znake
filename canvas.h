@@ -11,15 +11,15 @@ typedef struct Canvas Canvas;
 #define EMPTY_BLOCK  ' '
 #define BORDER_BLOCK '#'
 #define ZNAKE_BLOCK  'O'
-#define APPLE_BLOCK  '0'
+#define APPLE_BLOCK  '*'
 
 struct Canvas {
   char* c;
   int width;
-  int hight;
+  int height;
 };
 
-void initCanvas(Canvas* canvas, int width, int hight);
+void initCanvas(Canvas* canvas, int width, int height);
 
 void clearCanvas(Canvas* canvas);
 

@@ -10,7 +10,7 @@ void initApple(Apple* apple){
 }
 
 void spawnApple(Apple* apple, Canvas* canvas, int znakeLength){
-  int position = rand() % (canvas->width*canvas->hight - znakeLength);
+  int position = rand() % (canvas->width*canvas->height - znakeLength);
   for(int i=0; i<position+1; i++){
     if(*(canvas->c+i) != EMPTY_BLOCK){
       position++;

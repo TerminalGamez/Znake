@@ -4,14 +4,14 @@
 #include "canvas.h"
 #include "znake.h"
 
-void initCanvas(Canvas* canvas, int width, int hight){
-  canvas->c = (char*) malloc(width*hight*sizeof(char));
+void initCanvas(Canvas* canvas, int width, int height){
+  canvas->c = (char*) malloc(width*height*sizeof(char));
   canvas->width = width;
-  canvas->hight = hight;
+  canvas->height = height;
 }
 
 void clearCanvas(Canvas* canvas){
-  for(int i=0; i<canvas->width*canvas->hight; i++){
+  for(int i=0; i<canvas->width*canvas->height; i++){
     *(canvas->c+i) = EMPTY_BLOCK;
   }
 }
@@ -32,7 +32,7 @@ void printCanvas(Canvas* canvas){
   printHorizontalBorder(canvas->width);
   for(int y=0; y<canvas->width; y++){
     printVerticalBorder(0);
-    for(int x=0; x<canvas->hight; x++){
+    for(int x=0; x<canvas->height; x++){
       putchar(*(canvas->c+x+(y*canvas->width)));
     }
     printVerticalBorder(1);
