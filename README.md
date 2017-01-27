@@ -1,6 +1,6 @@
-# Tetriz
+# Znake
 
-Tetris for linux terminal.
+Snake for linux terminal.
 
 How to run:  
 ./znake  
