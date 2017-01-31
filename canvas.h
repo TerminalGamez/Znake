@@ -29,5 +29,7 @@ void printCanvas(Canvas* canvas);
 
 void addZnakeToCanvas(Canvas* canvas, Znake* znake);
 void addAppleToCanvas(Canvas* canvas, Apple* apple);
+void addTextToCanvas(Canvas* canvas, int y, char* text, int textLength);
+void addGameOverToCanvas(Canvas* canvas);
 
 #endif // CANVAS_H

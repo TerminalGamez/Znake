@@ -80,6 +80,9 @@ int main(){
     printCanvas(&canvas);
     collide(&znake, &canvas);
   }
+  addGameOverToCanvas(&canvas);
+  printCanvas(&canvas);
+  
   
   pthread_join(thread, NULL);
   resetTermios();

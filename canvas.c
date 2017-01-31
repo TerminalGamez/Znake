@@ -48,3 +48,34 @@ void addZnakeToCanvas(Canvas* canvas, Znake* znake){
 void addAppleToCanvas(Canvas* canvas, Apple* apple){
     *(canvas->c + apple->x + apple->y*canvas->width) = APPLE_BLOCK;
 }
+
+void addGameOverToCanvas(Canvas* canvas){
+  int textLength = 15;
+  char* text = "               ";
+  int midY = canvas->height/2 - 2;
+  addTextToCanvas(canvas, midY, text, textLength);
+  text = "   Game Over   ";
+  midY = canvas->height/2 - 1;
+  addTextToCanvas(canvas, midY, text, textLength);
+  text = "               ";
+  midY = canvas->height/2;
+  addTextToCanvas(canvas, midY, text, textLength);
+  text = " Press any key ";
+  midY = canvas->height/2 + 1;
+  addTextToCanvas(canvas, midY, text, textLength);
+  text = "    to quit    ";
+  midY = canvas->height/2 + 2;
+  addTextToCanvas(canvas, midY, text, textLength);
+  text = "               ";
+  midY = canvas->height/2 + 3;
+  addTextToCanvas(canvas, midY, text, textLength);
+  
+}
+
+void addTextToCanvas(Canvas* canvas, int y, char* text, int textLength){
+  int midX = canvas->width/2 - textLength/2;
+  for(int i=0; i<textLength; i++){
+    int x = midX+i;
+    *(canvas->c + x + y*canvas->width) = *(text+i);
+  }
+}
